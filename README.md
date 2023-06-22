@@ -1,8 +1,8 @@
-#Overview
+# Overview
 
 This project provides an opportunity to compare two JSON format files.
 
-##Status
+## Status
 
 | Type | Status |
 | ---- | ------ |
@@ -10,4 +10,4 @@ This project provides an opportunity to compare two JSON format files.
 | Linter status | 456 |
 | Code coverage | 123 |
 
-#Get it!
+# Get it!
