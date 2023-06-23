@@ -3,11 +3,6 @@ plugins {
     id 'checkstyle'
 }
 
-checkstyle {
-  //project.ext.checkstyleVersion = '8.20'
-  configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-}
-
 group 'hexlet.code'
 version '1.0-SNAPSHOT'
 
@@ -40,4 +35,8 @@ compileJava {
 
 run {
     standardInput = System.in
+}
+
+checkstyle {
+  toolVersion '9.2.1'
 }
