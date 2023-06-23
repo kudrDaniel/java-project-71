@@ -30,5 +30,7 @@ jobs:
         distribution: 'oracle'
     - name: Make gradlew executable
       run: chmod +x ./app/gradlew
-    - name: Lint code
+    - name: Lint main
       run: ./app/gradlew checkstyleMain -p ./app
+    - name: Lint tests
+      run: ./app/gradlew checkstyleTest -p ./app
