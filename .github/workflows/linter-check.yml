@@ -34,3 +34,5 @@ jobs:
       run: ./app/gradlew checkstyleMain -p ./app
     - name: Lint tests
       run: ./app/gradlew checkstyleTest -p ./app
+    - name: Build
+      run: cd ./app && make build
