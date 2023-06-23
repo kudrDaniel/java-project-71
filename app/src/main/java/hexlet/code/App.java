@@ -26,7 +26,7 @@ public final class App implements Callable<Integer> {
         Path fullFilePath1 = Paths.get(filepath1);
         Path fullFilePath2 = Paths.get(filepath2);
 
-        Differ differ = new Differ(fullFilePath1.toString(), fullFilePath2.toString());
+        Differ differ = new Differ(fullFilePath1, fullFilePath2);
         String difference;
         difference = differ.generate();
 
