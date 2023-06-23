@@ -28,7 +28,11 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+    - name: Change working directory
+      run: cd ./app
     - name: Make gradlew executable
-      run: chmod +x ./app/gradlew
+      run: chmod +x ./gradlew
     - name: Lint code
-      run: ./app/gradlew checkstyleMain
+      run: ./gradlew checkstyleMain
+    - name: Change working directory
+      run: cd ..
