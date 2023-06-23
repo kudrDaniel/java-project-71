@@ -5,7 +5,7 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Gradle CI
+name: Java CI
 
 on:
   push:
@@ -28,7 +28,16 @@ jobs:
       with:
         java-version: '17.0.5'
         distribution: 'oracle'
-    - name: Make gradlew executable
-      run: chmod +x ./app/gradlew
-    - name: Build
-      run: cd ./app && make build
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@v2.4.2
+      with:
+          arguments: build
+          build-root-directory: app
+    - name: Publish code coverage
+      uses: paambaati/codeclimate-action@v3.0.0
+      env:
+           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+           JACOCO_SOURCE_PATH: src/main/java
+      with:
+           coverageCommand: make report
+           coverageLocations: ${{github.workspace}}/build/reports/jacoco/test/jacocoTestReport.xml:jacoco
