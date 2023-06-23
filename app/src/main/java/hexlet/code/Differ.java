@@ -3,17 +3,20 @@ package hexlet.code;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-public class Differ {
+public final class Differ {
 
-    private final String filePath1;
-    private final String filePath2;
+    private final String pFilePath1;
+    private final String pFilePath2;
 
     Differ(String filePath1, String filePath2) {
-        this.filePath1 = filePath1;
-        this.filePath2 = filePath2;
+        pFilePath1 = filePath1;
+        pFilePath2 = filePath2;
     }
 
     public String generate() throws Exception {
@@ -22,8 +25,8 @@ public class Differ {
         Map<String, Object> fileData2;
 
         try {
-            fileData1 = mapper.readValue(new File(filePath1), Map.class);
-            fileData2 = mapper.readValue(new File(filePath2), Map.class);
+            fileData1 = mapper.readValue(new File(pFilePath1), Map.class);
+            fileData2 = mapper.readValue(new File(pFilePath2), Map.class);
         } catch (Exception ex) {
             throw ex;
         }

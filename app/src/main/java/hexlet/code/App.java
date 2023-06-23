@@ -1,26 +1,25 @@
 package hexlet.code;
 
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.concurrent.Callable;
-
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.concurrent.Callable;
+
 @Command(name = "gendiff", mixinStandardHelpOptions = true, version = "app 0.1",
         description = "Compares two configuration files and shows a difference.")
 
-public class App implements Callable<Integer> {
+public final class App implements Callable<Integer> {
     @Parameters(index = "0", description = "path to first file")
     private String filepath1;
     @Parameters(index = "1", description = "path to second file")
     private String filepath2;
 
     @Option(names = {"-f", "--format"}, description = "output format [default: stylish]")
-    public String format = "format";
+    private String format = "format";
 
     @Override
     public Integer call() throws Exception {
