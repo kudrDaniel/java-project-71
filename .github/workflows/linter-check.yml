@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 jobs:
-  gradle:
+  lint:
 
     runs-on: ubuntu-latest
 
@@ -28,9 +28,7 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-    - name: Set up Gradle
-      uses: gradle/gradle-build-action@v2.4.2
-      with:
-        build-root-directory: ./app
+    - name: Make gradlew executable
+      run: chmod +x ./app/gradlew
     - name: Lint code
-      run: ./app/gradlew checkstyleMain
+      run: ./app/gradlew checkstyleMain -p ./app
