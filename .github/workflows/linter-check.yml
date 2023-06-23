@@ -31,4 +31,4 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./app/gradlew
     - name: Lint code
-      run: ./app/gradlew checkstyleMain -p ./app --stacktrace
+      run: ./app/gradlew checkstyleMain -p ./app
