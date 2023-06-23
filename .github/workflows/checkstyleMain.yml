@@ -29,6 +29,6 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
     - name: Lint code
-      uses: ./app/gradlew
+      uses: app/gradlew
       with:
         arguments: checkstyleMain
