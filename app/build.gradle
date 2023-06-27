@@ -15,7 +15,8 @@ repositories {
 dependencies {
     implementation (
             'info.picocli:picocli:4.7.4',
-            'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+            'com.fasterxml.jackson.core:jackson-databind:2.15.2',
+            'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2'
     )
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
     implementation 'org.apache.logging.log4j:log4j-api:2.20.0'

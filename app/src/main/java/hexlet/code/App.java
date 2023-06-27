@@ -1,5 +1,7 @@
 package hexlet.code;
 
+import hexlet.code.differ.Differ;
+import hexlet.code.utils.Extensions;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -26,7 +28,10 @@ public final class App implements Callable<Integer> {
         Path fullFilePath1 = Paths.get(filepath1);
         Path fullFilePath2 = Paths.get(filepath2);
 
-        Differ differ = new Differ(fullFilePath1, fullFilePath2);
+        Differ differ = Differ.createDiffer(
+                fullFilePath1,
+                fullFilePath2,
+                Extensions.byFileExtension(Utils.getFileExtension(fullFilePath1)));
         String difference;
         difference = differ.generate();
 
