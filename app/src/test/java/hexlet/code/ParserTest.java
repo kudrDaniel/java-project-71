@@ -15,7 +15,12 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,7 +51,7 @@ public final class ParserTest {
         for (var ext : Extensions.values()) {
             List<Path> testFiles = new ArrayList<>();
             for (var fileName : FILES_NAMES) {
-                testFiles.add(Paths.get(source.toAbsolutePath() + "/" + fileName + "." + ext.extension[0]));
+                testFiles.add(Paths.get(source.toAbsolutePath() + "/" + fileName + "." + ext.getFirstExtension()));
                 Files.createFile(testFiles.get(testFiles.size() - 1));
             }
             TEST_FILES_MAP_BY_EXT.put(ext, testFiles);
@@ -120,7 +125,7 @@ public final class ParserTest {
     @EnumSource(Extensions.class)
     public void wrongFilePathTest(Extensions extension) throws IOException, URISyntaxException {
         Path wrongFilePath = Paths.get(Objects.requireNonNull(this.getClass().getResource("/")).toURI());
-        wrongFilePath = Paths.get(wrongFilePath.toAbsolutePath() + "/missing_file." + extension.extension[0]);
+        wrongFilePath = Paths.get(wrongFilePath.toAbsolutePath() + "/missing_file." + extension.getFirstExtension());
         Differ wrongPathDiffer = switch (extension) {
             case JSON -> new JSONDiffer(wrongFilePath, wrongFilePath);
             case YAML -> new YAMLDiffer(wrongFilePath, wrongFilePath);

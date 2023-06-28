@@ -6,7 +6,7 @@ import hexlet.code.fabric.differs.JSONDiffer;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class JSONCreator extends Creator {
+public final class JSONCreator extends Creator {
 
     @Override
     public Differ createDiffer(Path filePath1, Path filePath2) throws IOException {

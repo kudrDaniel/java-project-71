@@ -6,15 +6,23 @@ public enum Extensions {
     JSON("json"),
     YAML("yaml", "yml");
 
-    public final String[] extension;
+    private final String[] extensionArray;
 
-    Extensions(String... extension) {
-        this.extension = extension;
+    Extensions(String... extensions) {
+        extensionArray = extensions;
+    }
+
+    public String[] getExtensionArray() {
+        return extensionArray;
+    }
+
+    public String getFirstExtension() {
+        return getExtensionArray()[0];
     }
 
     public static Extensions byFileExtension(String extension) throws IndexOutOfBoundsException {
         return Arrays.stream(values())
-                .filter(extensions -> Arrays.stream(extensions.extension)
+                .filter(extensions -> Arrays.stream(extensions.extensionArray)
                         .anyMatch(value -> value.equalsIgnoreCase(extension)))
                 .toList().get(0);
     }

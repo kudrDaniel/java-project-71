@@ -11,7 +11,7 @@ public final class Utils {
                 .filter(string -> string.contains("."))
                 .map(string -> string.substring(string.lastIndexOf('.') + 1))
                 .filter(string -> !string.equals(""))
-                .orElseThrow(() -> new IOException("File has no extension:\n" +
-                        "\t" + fileName + "\n"));
+                .orElseThrow(() -> new IOException("File has no extension:\n"
+                        + "\t" + fileName + "\n"));
     }
 }

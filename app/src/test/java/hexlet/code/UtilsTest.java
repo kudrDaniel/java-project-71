@@ -14,13 +14,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public final class UtilsTest {
-    private static final Map<String, List<Path>> pathMapByParam;
+    private static final Map<String, List<Path>> PATH_MAP_BY_PARAM;
 
     static {
         try {
-            pathMapByParam = Map.of(
+            PATH_MAP_BY_PARAM = Map.of(
                     "right", List.of(
-                            Paths.get(Paths.get(Objects.requireNonNull(UtilsTest.class.getResource("/")).toURI()).toAbsolutePath() + "/file.yaml"),
+                            Paths.get(Paths.get(
+                                    Objects.requireNonNull(UtilsTest.class.getResource("/"))
+                                            .toURI()).toAbsolutePath() + "/file.yaml"),
                             Paths.get("file.exe"),
                             Paths.get(".gitignore")
                     ),
@@ -35,13 +37,13 @@ public final class UtilsTest {
     }
 
     @Test
-    public void utilsTest() throws IOException{
+    public void utilsTest() throws IOException {
         List<String> rightExpected = List.of("yaml", "exe", "gitignore");
         for (int i = 0; i < rightExpected.size(); i++) {
-            assertThat(Utils.getFileExtension(pathMapByParam.get("right").get(i))).isEqualTo(rightExpected.get(i));
+            assertThat(Utils.getFileExtension(PATH_MAP_BY_PARAM.get("right").get(i))).isEqualTo(rightExpected.get(i));
         }
         IOException wrongExpected = new IOException("no extension");
-        for (Path path : pathMapByParam.get("empty")) {
+        for (Path path : PATH_MAP_BY_PARAM.get("empty")) {
             assertThatThrownBy(() -> Utils.getFileExtension(path))
                     .isInstanceOf(wrongExpected.getClass())
                     .hasMessageContaining(wrongExpected.getMessage());

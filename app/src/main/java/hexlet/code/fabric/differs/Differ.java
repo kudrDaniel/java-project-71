@@ -26,17 +26,17 @@ public abstract class Differ {
         String fileExt1 = Utils.getFileExtension(pFilePath1.getFileName());
         String fileExt2 = Utils.getFileExtension(pFilePath2.getFileName());
         if (fileExt1.isEmpty() || fileExt2.isEmpty()) {
-            throw new IOException("One or both files has empty extension:\n" +
-                    "\t" + pFilePath1.getFileName() + "\n" +
-                    "\t" + pFilePath2.getFileName() + "\n"
+            throw new IOException("One or both files has empty extension:\n"
+                    + "\t" + pFilePath1.getFileName() + "\n"
+                    + "\t" + pFilePath2.getFileName() + "\n"
             );
-        } else if (Arrays.stream(extensions.extension)
-                .noneMatch(ext -> ext.equalsIgnoreCase(fileExt1) &&
-                        ext.equalsIgnoreCase(fileExt2))) {
-            throw new IOException("One or both files has wrong extension\n" +
-                    "or both files has different extension\n" +
-                    "\t" + pFilePath1.getFileName() + "\n" +
-                    "\t" + pFilePath2.getFileName() + "\n"
+        } else if (Arrays.stream(extensions.getExtensionArray())
+                .noneMatch(ext -> ext.equalsIgnoreCase(fileExt1)
+                        && ext.equalsIgnoreCase(fileExt2))) {
+            throw new IOException("One or both files has wrong extension\n"
+                    + "or both files has different extension\n"
+                    + "\t" + pFilePath1.getFileName() + "\n"
+                    + "\t" + pFilePath2.getFileName() + "\n"
             );
         }
     }

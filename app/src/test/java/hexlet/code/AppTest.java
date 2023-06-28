@@ -14,11 +14,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public final class AppTest {
     private final CommandLine commandLine = new CommandLine(new App());
-    private final CommandLine.IExecutionExceptionHandler exceptionHandler = (ex, commandLine, parseResult) -> {
+    private final CommandLine.IExecutionExceptionHandler exceptionHandler = (ex, cmdLine, parseResult) -> {
         //ex.printStackTrace(); // no stack trace
-        commandLine.getErr().println(ex.getMessage());
-        //commandLine.usage(commandLine.getErr());
-        return commandLine.getExitCodeExceptionMapper().getExitCode(ex);
+        cmdLine.getErr().println(ex.getMessage());
+        //cmdLine.usage(cmdLine.getErr());
+        return cmdLine.getExitCodeExceptionMapper().getExitCode(ex);
     };
     private final CommandLine.IExitCodeExceptionMapper exceptionMapper = exception -> {
         if (exception instanceof StreamReadException) {
@@ -43,7 +43,7 @@ public final class AppTest {
     };
 
     @BeforeEach
-    public void appInti(){
+    public void appInti() {
         commandLine
                 .setExitCodeExceptionMapper(exceptionMapper)
                 .setExecutionExceptionHandler(exceptionHandler);
