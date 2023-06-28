@@ -1,6 +1,6 @@
 # Overview
 
-This project provides an opportunity to compare two JSON format files.
+This project provides an opportunity to compare two files.
 
 ## Status
 
@@ -16,3 +16,6 @@ This project provides an opportunity to compare two JSON format files.
 # Asciinema's step-by-step
 ## Basic difference generator
 [![asciicast](https://asciinema.org/a/592709.svg)](https://asciinema.org/a/592709)
+
+## Added YAML support
+[![asciicast](https://asciinema.org/a/593734.svg)](https://asciinema.org/a/593734)
