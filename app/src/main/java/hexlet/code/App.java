@@ -1,19 +1,25 @@
 package hexlet.code;
 
-import hexlet.code.differ.Differ;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+import hexlet.code.fabric.JSONCreator;
+import hexlet.code.fabric.YAMLCreator;
+import hexlet.code.fabric.differs.Differ;
+import hexlet.code.utils.ExitCodes;
 import hexlet.code.utils.Extensions;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 @Command(name = "gendiff", mixinStandardHelpOptions = true, version = "app 0.1",
         description = "Compares two configuration files and shows a difference.")
-
 public final class App implements Callable<Integer> {
     @Parameters(index = "0", description = "path to first file")
     private String filepath1;
@@ -27,22 +33,53 @@ public final class App implements Callable<Integer> {
     public Integer call() throws Exception {
         Path fullFilePath1 = Paths.get(filepath1);
         Path fullFilePath2 = Paths.get(filepath2);
+        Extensions ext = Extensions.byFileExtension(Utils.getFileExtension(fullFilePath1));
 
-        Differ differ = Differ.createDiffer(
-                fullFilePath1,
-                fullFilePath2,
-                Extensions.byFileExtension(Utils.getFileExtension(fullFilePath1)));
+        Differ differ = switch (ext) {
+            case JSON -> new JSONCreator().createDiffer(fullFilePath1, fullFilePath2);
+            case YAML -> new YAMLCreator().createDiffer(fullFilePath1, fullFilePath2);
+        };
         String difference;
         difference = differ.generate();
 
         System.out.println();
         System.out.println(difference);
 
-        return 0;
+        return ExitCodes.EXIT_OK;
     }
 
     public static void main(String[] args) {
-        int exitCode = new CommandLine(new App()).execute(args);
+        CommandLine.IExecutionExceptionHandler exceptionHandler = (ex, commandLine, parseResult) -> {
+            //ex.printStackTrace(); // no stack trace
+            commandLine.getErr().println(ex.getMessage());
+            //commandLine.usage(commandLine.getErr());
+            return commandLine.getExitCodeExceptionMapper().getExitCode(ex);
+        };
+        CommandLine.IExitCodeExceptionMapper exceptionMapper = exception -> {
+            if (exception instanceof StreamReadException) {
+                return ExitCodes.EXIT_STREAM_READ;
+            } else if (exception instanceof DatabindException) {
+                return ExitCodes.EXIT_DATABIND;
+            } else if (exception instanceof InvalidPathException) {
+                return ExitCodes.EXIT_INVALID_PATH;
+            } else if (exception instanceof IOException) {
+                if (exception.getMessage().contains("no extension")) {
+                    return ExitCodes.EXIT_FILE_NO_EXTENSION;
+                } else if (exception.getMessage().contains("empty extension")) {
+                    return ExitCodes.EXIT_FILE_EMPTY_EXTENSION;
+                } else if (exception.getMessage().contains("wrong extension")) {
+                    return ExitCodes.EXIT_FILE_WRONG_EXTENSION;
+                } else {
+                    return ExitCodes.EXIT_FILE_OPEN_CLOSE_STREAM;
+                }
+            } else {
+                return ExitCodes.EXIT_WRONG;
+            }
+        };
+        int exitCode = new CommandLine(new App())
+                .setExitCodeExceptionMapper(exceptionMapper)
+                .setExecutionExceptionHandler(exceptionHandler)
+                .execute(args);
         System.exit(exitCode);
     }
 }
