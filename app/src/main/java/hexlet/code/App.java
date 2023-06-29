@@ -2,9 +2,11 @@ package hexlet.code;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
-import hexlet.code.fabric.JSONCreator;
-import hexlet.code.fabric.YAMLCreator;
-import hexlet.code.fabric.differs.Differ;
+import hexlet.code.differ.JSONDifferCreator;
+import hexlet.code.differ.YAMLDifferCreator;
+import hexlet.code.differ.factory.Differ;
+import hexlet.code.formatter.StylishCreator;
+import hexlet.code.formatter.factory.Formatter;
 import hexlet.code.utils.ExitCodes;
 import hexlet.code.utils.Extensions;
 import picocli.CommandLine;
@@ -26,8 +28,10 @@ public final class App implements Callable<Integer> {
     @Parameters(index = "1", description = "path to second file")
     private String filepath2;
 
-    @Option(names = {"-f", "--format"}, description = "output format [default: stylish]")
-    private String format = "format";
+    @Option(names = {"-f", "--format"},
+            defaultValue = "stylish",
+            description = "output format [default: ${DEFAULT-VALUE}]")
+    private String format;
 
     @Override
     public Integer call() throws Exception {
@@ -36,11 +40,14 @@ public final class App implements Callable<Integer> {
         Extensions ext = Extensions.byFileExtension(Utils.getFileExtension(fullFilePath1));
 
         Differ differ = switch (ext) {
-            case JSON -> new JSONCreator().createDiffer(fullFilePath1, fullFilePath2);
-            case YAML -> new YAMLCreator().createDiffer(fullFilePath1, fullFilePath2);
+            case JSON -> new JSONDifferCreator().createDiffer(fullFilePath1, fullFilePath2);
+            case YAML -> new YAMLDifferCreator().createDiffer(fullFilePath1, fullFilePath2);
+        };
+        Formatter formatter = switch (format.toLowerCase()) {
+            default -> new StylishCreator().createFormatter();
         };
         String difference;
-        difference = differ.generate();
+        difference = formatter.format(differ.generate());
 
         System.out.println();
         System.out.println(difference);

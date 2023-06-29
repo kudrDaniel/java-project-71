@@ -12,10 +12,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 public final class Parser {
-    public static String parse(Path filePath1, Path filePath2, ObjectMapper mapper) throws IOException {
+    public static Map<String, Object> parse(Path filePath1, Path filePath2, ObjectMapper mapper) throws IOException {
         Map<String, Object> fileData1;
         Map<String, Object> fileData2;
 
@@ -46,7 +45,7 @@ public final class Parser {
             } else if (!fileData2.containsKey(key)) {
                 //deleted
                 result.put("- " + key, fileData1.get(key));
-            } else if (fileData1.get(key).equals(fileData2.get(key))) {
+            } else if (Utils.equalsNullable(fileData1.get(key), fileData2.get(key))) {
                 //unchanged
                 result.put("  " + key, fileData1.get(key));
             } else {
@@ -55,8 +54,6 @@ public final class Parser {
                 result.put("+ " + key, fileData2.get(key));
             }
         }
-        return "{\n" + result.entrySet().stream()
-                .map(entry -> "\s\s" + entry.getKey() + ": " + entry.getValue().toString())
-                .collect(Collectors.joining("\n")) + "\n}";
+        return result;
     }
 }

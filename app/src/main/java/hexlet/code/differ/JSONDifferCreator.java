@@ -1,12 +1,12 @@
-package hexlet.code.fabric;
+package hexlet.code.differ;
 
-import hexlet.code.fabric.differs.Differ;
-import hexlet.code.fabric.differs.JSONDiffer;
+import hexlet.code.differ.factory.Differ;
+import hexlet.code.differ.factory.JSONDiffer;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-public final class JSONCreator extends Creator {
+public final class JSONDifferCreator extends DifferCreator {
 
     @Override
     public Differ createDiffer(Path filePath1, Path filePath2) throws IOException {

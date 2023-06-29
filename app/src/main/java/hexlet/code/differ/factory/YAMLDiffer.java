@@ -1,4 +1,4 @@
-package hexlet.code.fabric.differs;
+package hexlet.code.differ.factory;
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import hexlet.code.Parser;
@@ -7,6 +7,7 @@ import hexlet.code.utils.FilesHelper;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 
 public final class YAMLDiffer extends Differ {
     public YAMLDiffer(Path filePath1, Path filePath2) throws IOException {
@@ -15,7 +16,7 @@ public final class YAMLDiffer extends Differ {
     }
 
     @Override
-    public String generate() throws IOException {
+    public Map<String, Object> generate() throws IOException {
         return Parser.parse(
                 this.getFilePath(FilesHelper.FILE1),
                 this.getFilePath(FilesHelper.FILE2),

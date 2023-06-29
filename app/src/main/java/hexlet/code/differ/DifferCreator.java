@@ -1,10 +1,10 @@
-package hexlet.code.fabric;
+package hexlet.code.differ;
 
-import hexlet.code.fabric.differs.Differ;
+import hexlet.code.differ.factory.Differ;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-abstract class Creator {
+abstract class DifferCreator {
     public abstract Differ createDiffer(Path filePath1, Path filePath2) throws IOException;
 }

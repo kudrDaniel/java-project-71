@@ -1,12 +1,12 @@
-package hexlet.code.fabric;
+package hexlet.code.differ;
 
-import hexlet.code.fabric.differs.Differ;
-import hexlet.code.fabric.differs.YAMLDiffer;
+import hexlet.code.differ.factory.Differ;
+import hexlet.code.differ.factory.YAMLDiffer;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-public final class YAMLCreator extends Creator {
+public final class YAMLDifferCreator extends DifferCreator {
 
     @Override
     public Differ createDiffer(Path filePath1, Path filePath2) throws IOException {

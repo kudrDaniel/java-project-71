@@ -1,4 +1,4 @@
-package hexlet.code.fabric.differs;
+package hexlet.code.differ.factory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.Utils;
@@ -8,6 +8,7 @@ import hexlet.code.utils.FilesHelper;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Map;
 
 public abstract class Differ {
     private final Path pFilePath1;
@@ -20,7 +21,7 @@ public abstract class Differ {
         pMapper = mapper;
     }
 
-    public abstract String generate() throws IOException;
+    public abstract Map<String, Object> generate() throws IOException;
 
     protected final void checkFilesExtension(Extensions extensions) throws IOException {
         String fileExt1 = Utils.getFileExtension(pFilePath1.getFileName());

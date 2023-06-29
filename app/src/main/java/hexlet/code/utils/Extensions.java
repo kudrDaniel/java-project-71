@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum Extensions {
     JSON("json"),
-    YAML("yaml", "yml");
+    YAML("yml", "yaml");
 
     private final String[] extensionArray;
 

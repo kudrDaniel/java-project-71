@@ -14,4 +14,14 @@ public final class Utils {
                 .orElseThrow(() -> new IOException("File has no extension:\n"
                         + "\t" + fileName + "\n"));
     }
+
+    public static boolean equalsNullable(Object obj1, Object obj2) {
+        if (obj1 == obj2) {
+            return true;
+        } else if (obj1 == null || obj2 == null) {
+            return false;
+        } else {
+            return obj1.equals(obj2);
+        }
+    }
 }
