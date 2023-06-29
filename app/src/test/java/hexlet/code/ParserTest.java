@@ -1,11 +1,8 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import hexlet.code.differ.factory.Differ;
-import hexlet.code.differ.factory.JSONDiffer;
-import hexlet.code.differ.factory.YAMLDiffer;
-import hexlet.code.formatter.factory.Formatter;
-import hexlet.code.formatter.factory.StylishFormat;
+import hexlet.code.differs.JSONDiffer;
+import hexlet.code.differs.YAMLDiffer;
 import hexlet.code.utils.Extensions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -23,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public final class ParserTest {
-    private static final Formatter TEST_FORMATTER = new StylishFormat();
 
     private final Path resources = Paths.get(
             Objects.requireNonNull(this.getClass().getClassLoader().getResource("parserTest")).toURI());
@@ -35,7 +31,7 @@ public final class ParserTest {
 
     @ParameterizedTest
     @EnumSource(Extensions.class)
-    public void rightComparisonTest(Extensions extension) throws IOException {
+    public void stylishComparisonTest(Extensions extension) throws IOException {
         List<Path> testFiles = List.of(
                 Paths.get(resources.toAbsolutePath().toString(),
                         extension.getFirstExtension(),
@@ -45,8 +41,8 @@ public final class ParserTest {
                         "right2." + extension.getFirstExtension())
         );
         pTestDiffer = switch (extension) {
-            case JSON -> new JSONDiffer(testFiles.get(0), testFiles.get(1));
-            case YAML -> new YAMLDiffer(testFiles.get(0), testFiles.get(1));
+            case JSON -> new JSONDiffer();
+            case YAML -> new YAMLDiffer();
         };
 
         String expected =
@@ -76,7 +72,41 @@ public final class ParserTest {
                           - setting3: true
                           + setting3: none
                         }""";
-        String actual = TEST_FORMATTER.format(pTestDiffer.generate());
+        String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "stylish");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @EnumSource(Extensions.class)
+    public void plainComparisonTest(Extensions extension) throws IOException {
+        List<Path> testFiles = List.of(
+                Paths.get(resources.toAbsolutePath().toString(),
+                        extension.getFirstExtension(),
+                        "right1." + extension.getFirstExtension()),
+                Paths.get(resources.toAbsolutePath().toString(),
+                        extension.getFirstExtension(),
+                        "right2." + extension.getFirstExtension())
+        );
+        pTestDiffer = switch (extension) {
+            case JSON -> new JSONDiffer();
+            case YAML -> new YAMLDiffer();
+        };
+        String expected =
+                """
+                        Property 'chars2' was updated. From [complex value] to false
+                        Property 'checked' was updated. From false to true
+                        Property 'default' was updated. From null to [complex value]
+                        Property 'id' was updated. From 45 to null
+                        Property 'key1' was removed
+                        Property 'key2' was added with value: 'value2'
+                        Property 'numbers2' was updated. From [complex value] to [complex value]
+                        Property 'numbers3' was removed
+                        Property 'numbers4' was added with value: [complex value]
+                        Property 'obj1' was added with value: [complex value]
+                        Property 'setting1' was updated. From 'Some value' to 'Another value'
+                        Property 'setting2' was updated. From 200 to 300
+                        Property 'setting3' was updated. From true to 'none'""";
+        String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "plane");
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -92,8 +122,8 @@ public final class ParserTest {
                         "blank2." + extension.getFirstExtension())
         );
         pTestDiffer = switch (extension) {
-            case JSON -> new JSONDiffer(testFiles.get(0), testFiles.get(1));
-            case YAML -> new YAMLDiffer(testFiles.get(0), testFiles.get(1));
+            case JSON -> new JSONDiffer();
+            case YAML -> new YAMLDiffer();
         };
         for (Path testFile : testFiles) {
             Files.write(testFile, pTestDiffer.getMapper().writeValueAsBytes(Map.of()));
@@ -104,7 +134,7 @@ public final class ParserTest {
                         {
 
                         }""";
-        String actual = TEST_FORMATTER.format(pTestDiffer.generate());
+        String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "stylish");
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -120,15 +150,16 @@ public final class ParserTest {
                         "empty2." + extension.getFirstExtension())
         );
         pTestDiffer = switch (extension) {
-            case JSON -> new JSONDiffer(testFiles.get(0), testFiles.get(1));
-            case YAML -> new YAMLDiffer(testFiles.get(0), testFiles.get(1));
+            case JSON -> new JSONDiffer();
+            case YAML -> new YAMLDiffer();
         };
         for (Path testFile : testFiles) {
             Files.write(testFile, pTestDiffer.getMapper().writeValueAsBytes(""));
         }
 
         Class<InvalidFormatException> expected = InvalidFormatException.class;
-        assertThatThrownBy(pTestDiffer::generate).isInstanceOf(expected);
+        assertThatThrownBy(() -> pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "stylish"))
+                .isInstanceOf(expected);
     }
 
     /*@ParameterizedTest
@@ -138,18 +169,15 @@ public final class ParserTest {
     }*/
     @ParameterizedTest
     @EnumSource(Extensions.class)
-    public void wrongFilePathTest(Extensions extension) throws IOException, URISyntaxException {
-        Path wrongFilePath = Paths.get(Objects.requireNonNull(this.getClass().getResource("/")).toURI());
-        wrongFilePath = Paths.get(
-                wrongFilePath.toAbsolutePath().toString(),
-                "missing_file." + extension.getFirstExtension()
-        );
-        Differ wrongPathDiffer = switch (extension) {
-            case JSON -> new JSONDiffer(wrongFilePath, wrongFilePath);
-            case YAML -> new YAMLDiffer(wrongFilePath, wrongFilePath);
+    public void wrongFilePathTest(Extensions extension) throws IOException {
+        Path wrongFilePath = Paths.get("missing." + extension.getFirstExtension());
+        pTestDiffer = switch (extension) {
+            case JSON -> new JSONDiffer();
+            case YAML -> new YAMLDiffer();
         };
 
         Class<IOException> expected = IOException.class;
-        assertThatThrownBy(wrongPathDiffer::generate).isInstanceOf(expected);
+        assertThatThrownBy(() -> pTestDiffer.generate(wrongFilePath, wrongFilePath, "stylish"))
+                .isInstanceOf(expected);
     }
 }

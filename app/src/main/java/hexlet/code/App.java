@@ -2,11 +2,8 @@ package hexlet.code;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
-import hexlet.code.differ.JSONDifferCreator;
-import hexlet.code.differ.YAMLDifferCreator;
-import hexlet.code.differ.factory.Differ;
-import hexlet.code.formatter.StylishCreator;
-import hexlet.code.formatter.factory.Formatter;
+import hexlet.code.differs.JSONDiffer;
+import hexlet.code.differs.YAMLDiffer;
 import hexlet.code.utils.ExitCodes;
 import hexlet.code.utils.Extensions;
 import picocli.CommandLine;
@@ -40,14 +37,11 @@ public final class App implements Callable<Integer> {
         Extensions ext = Extensions.byFileExtension(Utils.getFileExtension(fullFilePath1));
 
         Differ differ = switch (ext) {
-            case JSON -> new JSONDifferCreator().createDiffer(fullFilePath1, fullFilePath2);
-            case YAML -> new YAMLDifferCreator().createDiffer(fullFilePath1, fullFilePath2);
-        };
-        Formatter formatter = switch (format.toLowerCase()) {
-            default -> new StylishCreator().createFormatter();
+            case JSON -> new JSONDiffer();
+            case YAML -> new YAMLDiffer();
         };
         String difference;
-        difference = formatter.format(differ.generate());
+        difference = differ.generate(fullFilePath1, fullFilePath2, format);
 
         System.out.println();
         System.out.println(difference);

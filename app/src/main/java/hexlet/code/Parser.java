@@ -14,7 +14,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public final class Parser {
-    public static Map<String, Object> parse(Path filePath1, Path filePath2, ObjectMapper mapper) throws IOException {
+    public static LinkedHashMap<String, Object> parse(
+            Path filePath1,
+            Path filePath2,
+            ObjectMapper mapper
+    ) throws IOException {
         Map<String, Object> fileData1;
         Map<String, Object> fileData2;
 
@@ -33,7 +37,7 @@ public final class Parser {
             fileBytes2.close();
         }
 
-        Map<String, Object> result = new LinkedHashMap<>();
+        LinkedHashMap<String, Object> result = new LinkedHashMap<>();
         Set<String> keys = new TreeSet<>(fileData1.keySet());
         keys.addAll(fileData2.keySet());
 
@@ -50,8 +54,8 @@ public final class Parser {
                 result.put("  " + key, fileData1.get(key));
             } else {
                 //changed
-                result.put("- " + key, fileData1.get(key));
-                result.put("+ " + key, fileData2.get(key));
+                result.put("1 " + key, fileData1.get(key));
+                result.put("2 " + key, fileData2.get(key));
             }
         }
         return result;
