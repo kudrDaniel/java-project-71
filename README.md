@@ -17,8 +17,11 @@ This project provides an opportunity to compare two files.
 ## Basic difference generator
 [![asciicast](https://asciinema.org/a/592709.svg)](https://asciinema.org/a/592709)
 
-## Added YAML support
+## Add YAML support
 [![asciicast](https://asciinema.org/a/593734.svg)](https://asciinema.org/a/593734)
 
 ## Comparing nested files
 [![asciicast](https://asciinema.org/a/593893.svg)](https://asciinema.org/a/593893)
+
+## Add 'plane' output format
+[![asciicast](https://asciinema.org/a/593952.svg)](https://asciinema.org/a/593952)
