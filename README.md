@@ -19,3 +19,6 @@ This project provides an opportunity to compare two files.
 
 ## Added YAML support
 [![asciicast](https://asciinema.org/a/593734.svg)](https://asciinema.org/a/593734)
+
+## Comparing nested files
+[![asciicast](https://asciinema.org/a/593893.svg)](https://asciinema.org/a/593893)
