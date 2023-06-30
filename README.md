@@ -25,3 +25,6 @@ This project provides an opportunity to compare two files.
 
 ## Add 'plane' output format
 [![asciicast](https://asciinema.org/a/593952.svg)](https://asciinema.org/a/593952)
+
+## Add 'json' output format
+[![asciicast](https://asciinema.org/a/594021.svg)](https://asciinema.org/a/594021)

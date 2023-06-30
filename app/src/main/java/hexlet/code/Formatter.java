@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import hexlet.code.formatters.JSONFormat;
 import hexlet.code.formatters.PlaneFormat;
 import hexlet.code.formatters.StylishFormat;
 
@@ -10,6 +11,7 @@ public abstract class Formatter {
         return switch (formatName) {
             case "stylish" -> new StylishFormat();
             case "plane" -> new PlaneFormat();
+            case "json" -> new JSONFormat();
             default -> new StylishFormat();
         };
     }
