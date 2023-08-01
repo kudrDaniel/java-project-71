@@ -10,8 +10,6 @@ import picocli.CommandLine.Parameters;
 
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 @Command(name = "gendiff", mixinStandardHelpOptions = true, version = "app 0.1",
@@ -29,12 +27,10 @@ public final class App implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        Path fullFilePath1 = Paths.get(filepath1);
-        Path fullFilePath2 = Paths.get(filepath2);
 
         Differ differ = new Differ();
         String difference;
-        difference = differ.generate(fullFilePath1, fullFilePath2, format);
+        difference = differ.generate(filepath1, filepath2, format);
 
         System.out.println();
         System.out.println(difference);

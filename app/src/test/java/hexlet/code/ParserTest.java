@@ -52,7 +52,7 @@ public final class ParserTest {
     @ParameterizedTest
     @EnumSource(Extensions.class)
     public void comparisonTest(Extensions extension) throws IOException {
-        List<Path> testFiles = generateFilePaths("right1", "right2", extension);
+        List<String> testFiles = generateFilePaths("right1", "right2", extension);
 
         String expected = readExpectedFromFileByKey("stylish");
         String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "stylish");
@@ -70,9 +70,9 @@ public final class ParserTest {
     @ParameterizedTest
     @EnumSource(Extensions.class)
     public void emptyComparisonTest(Extensions extension) throws Exception {
-        List<Path> testFiles = generateFilePaths("blank1", "blank2", extension);
-        for (Path testFile : testFiles) {
-            Files.write(testFile, new ObjectMapper().writeValueAsBytes(Map.of()));
+        List<String> testFiles = generateFilePaths("blank1", "blank2", extension);
+        for (String testFile : testFiles) {
+            Files.write(Paths.get(testFile), new ObjectMapper().writeValueAsBytes(Map.of()));
         }
 
         String expected = readExpectedFromFileByKey("blank");
@@ -83,9 +83,9 @@ public final class ParserTest {
     @ParameterizedTest
     @EnumSource(Extensions.class)
     public void emptyFileTest(Extensions extension) throws Exception {
-        List<Path> testFiles = generateFilePaths("empty1", "empty2", extension);
-        for (Path testFile : testFiles) {
-            Files.write(testFile, new ObjectMapper().writeValueAsBytes(""));
+        List<String> testFiles = generateFilePaths("empty1", "empty2", extension);
+        for (String testFile : testFiles) {
+            Files.write(Paths.get(testFile), new ObjectMapper().writeValueAsBytes(""));
         }
 
         Class<InvalidFormatException> expected = InvalidFormatException.class;
@@ -96,21 +96,21 @@ public final class ParserTest {
     @ParameterizedTest
     @EnumSource(Extensions.class)
     public void wrongFilePathTest(Extensions extension) {
-        Path wrongFilePath = Paths.get("missing." + extension.getFirstExtension());
+        String wrongFilePath = Paths.get("missing." + extension.getFirstExtension()).toString();
 
         Class<IOException> expected = IOException.class;
         assertThatThrownBy(() -> pTestDiffer.generate(wrongFilePath, wrongFilePath, "stylish"))
                 .isInstanceOf(expected);
     }
 
-    private List<Path> generateFilePaths(String name1, String name2, Extensions extension) {
+    private List<String> generateFilePaths(String name1, String name2, Extensions extension) {
         return List.of(
                 Paths.get(resources.toAbsolutePath().toString(),
                         extension.getFirstExtension(),
-                        name1 + "." + extension.getFirstExtension()),
+                        name1 + "." + extension.getFirstExtension()).toString(),
                 Paths.get(resources.toAbsolutePath().toString(),
                         extension.getFirstExtension(),
-                        name2 + "." + extension.getFirstExtension())
+                        name2 + "." + extension.getFirstExtension()).toString()
         );
     }
 

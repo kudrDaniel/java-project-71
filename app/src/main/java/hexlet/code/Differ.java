@@ -1,7 +1,6 @@
 package hexlet.code;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,11 +13,10 @@ public final class Differ {
     }
 
     public String generate(
-            Path filePath1,
-            Path filePath2,
-            String formatName)
+            String filePath1,
+            String filePath2,
+            String format)
             throws IOException {
-
         List<Map<String, Object>> mapList = Parser.parse(filePath1, filePath2);
 
         Map<String, Object> map1 = mapList.get(0);
@@ -51,6 +49,14 @@ public final class Differ {
                 differMap.put(newKey, map2.get(key));
             }
         }
-        return Formatter.getFormatterByName(formatName).format(differMap);
+        return Formatter.getFormatterByName(format).format(differMap);
+
+    }
+
+    public String generate(
+            String filePath1,
+            String filePath2)
+            throws IOException {
+        return generate(filePath1, filePath2, "stylish");
     }
 }
