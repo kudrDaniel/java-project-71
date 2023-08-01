@@ -30,7 +30,6 @@ public final class App implements Callable<Integer> {
         String difference;
         difference = Differ.generate(filepath1, filepath2, format);
 
-        System.out.println();
         System.out.println(difference);
 
         return ExitCodes.EXIT_OK;
