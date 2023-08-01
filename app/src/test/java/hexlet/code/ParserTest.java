@@ -33,9 +33,9 @@ public final class ParserTest {
             "stylish", Paths.get(resources.toAbsolutePath().toString(),
                     "expected",
                     "stylishExpected.txt"),
-            "plane", Paths.get(resources.toAbsolutePath().toString(),
+            "plain", Paths.get(resources.toAbsolutePath().toString(),
                     "expected",
-                    "planeExpected.txt"),
+                    "plainExpected.txt"),
             "json", Paths.get(resources.toAbsolutePath().toString(),
                     "expected",
                     "jsonExpected.txt"),
@@ -58,8 +58,8 @@ public final class ParserTest {
         String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "stylish");
         assertThat(actual).isEqualTo(expected);
 
-        expected = readExpectedFromFileByKey("plane");
-        actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "plane");
+        expected = readExpectedFromFileByKey("plain");
+        actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "plain");
         assertThat(actual).isEqualTo(expected);
 
         expected = readExpectedFromFileByKey("json");

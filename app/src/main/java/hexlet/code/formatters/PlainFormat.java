@@ -4,7 +4,7 @@ import hexlet.code.Formatter;
 
 import java.util.Map;
 
-public final class PlaneFormat extends Formatter {
+public final class PlainFormat extends Formatter {
     @Override
     public String format(Map<String, Object> objectMap) {
         StringBuilder result = new StringBuilder();

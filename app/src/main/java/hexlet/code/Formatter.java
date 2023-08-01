@@ -1,7 +1,7 @@
 package hexlet.code;
 
 import hexlet.code.formatters.JSONFormat;
-import hexlet.code.formatters.PlaneFormat;
+import hexlet.code.formatters.PlainFormat;
 import hexlet.code.formatters.StylishFormat;
 
 import java.io.IOException;
@@ -11,7 +11,7 @@ public abstract class Formatter {
     public static Formatter getFormatterByName(String formatName) {
         return switch (formatName) {
             case "stylish" -> new StylishFormat();
-            case "plane" -> new PlaneFormat();
+            case "plain" -> new PlainFormat();
             case "json" -> new JSONFormat();
             default -> new StylishFormat();
         };
