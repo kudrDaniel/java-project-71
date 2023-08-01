@@ -3,7 +3,6 @@ package hexlet.code;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import hexlet.code.utils.ExitCodes;
-import hexlet.code.utils.Extensions;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;

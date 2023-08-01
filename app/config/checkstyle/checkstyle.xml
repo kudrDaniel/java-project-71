@@ -163,7 +163,10 @@
         <!-- See https://checkstyle.org/config_coding.html -->
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
-        <module name="HiddenField"/>
+        <module name="HiddenField" >
+    <property name="ignoreSetter" value="true" />
+    <property name="ignoreConstructorParameter" value="true" />
+</module>
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
         <module name="MagicNumber"/>
@@ -186,6 +189,10 @@
         <!-- <module name="FinalParameters"/> -->
         <!-- <module name="TodoComment"/> -->
         <module name="UpperEll"/>
+
+        <module name="Indentation">
+          <property name="basicOffset" value="4"/>
+        </module>
 
         <!-- https://checkstyle.org/config_filters.html#SuppressionXpathFilter -->
         <module name="SuppressionXpathFilter">
