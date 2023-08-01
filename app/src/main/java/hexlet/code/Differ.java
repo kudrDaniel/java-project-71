@@ -8,11 +8,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public final class Differ {
-
-    public Differ() {
-    }
-
-    public String generate(
+    public static String generate(
             String filePath1,
             String filePath2,
             String format)
@@ -53,7 +49,7 @@ public final class Differ {
 
     }
 
-    public String generate(
+    public static String generate(
             String filePath1,
             String filePath2)
             throws IOException {

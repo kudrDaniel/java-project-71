@@ -44,8 +44,6 @@ public final class ParserTest {
                     "blankExpected.txt")
     );
 
-    private final Differ pTestDiffer = new Differ();
-
     public ParserTest() throws URISyntaxException {
     }
 
@@ -55,15 +53,15 @@ public final class ParserTest {
         List<String> testFiles = generateFilePaths("right1", "right2", extension);
 
         String expected = readExpectedFromFileByKey("stylish");
-        String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "stylish");
+        String actual = Differ.generate(testFiles.get(0), testFiles.get(1), "stylish");
         assertThat(actual).isEqualTo(expected);
 
         expected = readExpectedFromFileByKey("plain");
-        actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "plain");
+        actual = Differ.generate(testFiles.get(0), testFiles.get(1), "plain");
         assertThat(actual).isEqualTo(expected);
 
         expected = readExpectedFromFileByKey("json");
-        actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "json");
+        actual = Differ.generate(testFiles.get(0), testFiles.get(1), "json");
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -76,7 +74,7 @@ public final class ParserTest {
         }
 
         String expected = readExpectedFromFileByKey("blank");
-        String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "stylish");
+        String actual = Differ.generate(testFiles.get(0), testFiles.get(1));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -89,7 +87,7 @@ public final class ParserTest {
         }
 
         Class<InvalidFormatException> expected = InvalidFormatException.class;
-        assertThatThrownBy(() -> pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "stylish"))
+        assertThatThrownBy(() -> Differ.generate(testFiles.get(0), testFiles.get(1)))
                 .isInstanceOf(expected);
     }
 
@@ -99,7 +97,7 @@ public final class ParserTest {
         String wrongFilePath = Paths.get("missing." + extension.getFirstExtension()).toString();
 
         Class<IOException> expected = IOException.class;
-        assertThatThrownBy(() -> pTestDiffer.generate(wrongFilePath, wrongFilePath, "stylish"))
+        assertThatThrownBy(() -> Differ.generate(wrongFilePath, wrongFilePath))
                 .isInstanceOf(expected);
     }
 
