@@ -2,62 +2,60 @@ package hexlet.code;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import hexlet.code.utils.Extensions;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 public final class Parser {
-    public static LinkedHashMap<String, Object> parse(
+    public static List<Map<String, Object>> parse(
             Path filePath1,
-            Path filePath2,
-            ObjectMapper mapper
-    ) throws IOException {
-        Map<String, Object> fileData1;
-        Map<String, Object> fileData2;
+            Path filePath2)
+            throws IOException {
+        List<Map<String, Object>> mapList = new ArrayList<>();
 
         InputStream fileBytes1 = InputStream.nullInputStream();
         InputStream fileBytes2 = InputStream.nullInputStream();
 
+        Extensions[] filesExt = {
+                Extensions.byFileExtension(Utils.getFileExtension(filePath1)),
+                Extensions.byFileExtension(Utils.getFileExtension(filePath2))
+        };
+
+        if (filesExt[0] != filesExt[1]) {
+            throw new IOException("wrong extension");
+        }
+
+        ObjectMapper mapper = switch (Extensions.byFileExtension(Utils.getFileExtension(filePath1))) {
+            case JSON -> new ObjectMapper();
+            case YAML -> new YAMLMapper();
+        };
+
         try {
             fileBytes1 = Files.newInputStream(filePath1, StandardOpenOption.READ);
             fileBytes2 = Files.newInputStream(filePath2, StandardOpenOption.READ);
-            fileData1 = mapper.readValue(fileBytes1,
-                    new TypeReference<LinkedHashMap<String, Object>>() { });
-            fileData2 = mapper.readValue(fileBytes2,
-                    new TypeReference<LinkedHashMap<String, Object>>() { });
+
+            Map<String, Object> objectMap1 = mapper.readValue(fileBytes1,
+                    new TypeReference<HashMap<String, Object>>() {
+                    });
+            Map<String, Object> objectMap2 = mapper.readValue(fileBytes2,
+                    new TypeReference<HashMap<String, Object>>() {
+                    });
+
+            mapList.add(objectMap1);
+            mapList.add(objectMap2);
         } finally {
             fileBytes1.close();
             fileBytes2.close();
         }
-
-        LinkedHashMap<String, Object> result = new LinkedHashMap<>();
-        Set<String> keys = new TreeSet<>(fileData1.keySet());
-        keys.addAll(fileData2.keySet());
-
-        for (String key : keys) {
-
-            if (!fileData1.containsKey(key)) {
-                //added
-                result.put("+ " + key, fileData2.get(key));
-            } else if (!fileData2.containsKey(key)) {
-                //deleted
-                result.put("- " + key, fileData1.get(key));
-            } else if (Utils.equalsNullable(fileData1.get(key), fileData2.get(key))) {
-                //unchanged
-                result.put("  " + key, fileData1.get(key));
-            } else {
-                //changed
-                result.put("1 " + key, fileData1.get(key));
-                result.put("2 " + key, fileData2.get(key));
-            }
-        }
-        return result;
+        return mapList;
     }
 }

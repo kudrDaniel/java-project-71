@@ -4,7 +4,8 @@ import hexlet.code.formatters.JSONFormat;
 import hexlet.code.formatters.PlaneFormat;
 import hexlet.code.formatters.StylishFormat;
 
-import java.util.LinkedHashMap;
+import java.io.IOException;
+import java.util.Map;
 
 public abstract class Formatter {
     public static Formatter getFormatterByName(String formatName) {
@@ -16,7 +17,7 @@ public abstract class Formatter {
         };
     }
 
-    public abstract String format(LinkedHashMap<String, Object> objectMap);
+    public abstract String format(Map<String, Object> objectMap) throws IOException;
     public final String toStringNull(Object obj) {
         return obj == null ? "null" : obj.toString();
     }

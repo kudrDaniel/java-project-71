@@ -2,45 +2,28 @@ package hexlet.code.formatters;
 
 import hexlet.code.Formatter;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public final class PlaneFormat extends Formatter {
     @Override
-    public String format(LinkedHashMap<String, Object> objectMap) {
-        StringBuilder sBuilder = new StringBuilder();
-        LinkedHashMap<Entry<String, Object>, String> newObjectMap = objectMap.entrySet().stream()
-                .filter(entry -> entry.getKey().charAt(0) != ' ')
-                .map(entry -> {
-                    String newKey = switch (entry.getKey().substring(0, 1)) {
-                        case "-" -> "removed";
-                        case "+" -> "added";
-                        case "1" -> "updatedFrom";
-                        case "2" -> "updatedTo";
-                        default -> null;
-                    };
-                    SimpleEntry<String, Object> newPair = new SimpleEntry<>(
-                            entry.getKey().substring(2),
-                            entry.getValue());
-                    return new SimpleEntry<>(newPair, newKey);
-                }).collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue,
-                        (oldEntry, newEntry) -> newEntry,
-                        LinkedHashMap::new));
-        for (var pair : newObjectMap.keySet()) {
-            String toAdd = switch (newObjectMap.get(pair)) {
-                case "removed" -> "Property '" + pair.getKey() + "' was removed\n";
-                case "added" -> "Property '" + pair.getKey() + "' was added with value: "
-                + getComplexString(pair.getValue()) + "\n";
-                case "updatedFrom" -> "Property '" + pair.getKey() + "' was updated. From "
-                + getComplexString(pair.getValue()) + " to ";
-                case "updatedTo" -> getComplexString(pair.getValue()) + "\n";
-                default -> "Bruh";
+    public String format(Map<String, Object> objectMap) {
+        StringBuilder result = new StringBuilder();
+        objectMap.forEach((key1, value) -> {
+            String[] pair = key1.split(" ");
+            String key = pair[0];
+            String option = pair[1];
+            key = switch (option) {
+                case "removed" -> "Property '" + key + "' was removed\n";
+                case "changedFrom" -> "Property '" + key + "' was updated. From "
+                        + getComplexString(value) + " to ";
+                case "added" -> "Property '" + key + "' was added with value: "
+                        + getComplexString(value) + "\n";
+                case "changedTo" -> getComplexString(value) + "\n";
+                default -> "";
             };
-            sBuilder.append(toAdd);
-        }
-        sBuilder.deleteCharAt(sBuilder.lastIndexOf("\n"));
-        return sBuilder.toString();
+            result.append(key);
+        });
+        result.deleteCharAt(result.lastIndexOf("\n"));
+        return result.toString();
     }
 }

@@ -1,20 +1,25 @@
 package hexlet.code;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import hexlet.code.differs.JSONDiffer;
-import hexlet.code.differs.YAMLDiffer;
 import hexlet.code.utils.Extensions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -24,158 +29,53 @@ public final class ParserTest {
     private final Path resources = Paths.get(
             Objects.requireNonNull(this.getClass().getClassLoader().getResource("parserTest")).toURI());
 
-    private Differ pTestDiffer;
+    private final Map<String, Path> expectedFiles = Map.of(
+            "stylish", Paths.get(resources.toAbsolutePath().toString(),
+                    "expected",
+                    "stylishExpected.txt"),
+            "plane", Paths.get(resources.toAbsolutePath().toString(),
+                    "expected",
+                    "planeExpected.txt"),
+            "json", Paths.get(resources.toAbsolutePath().toString(),
+                    "expected",
+                    "jsonExpected.txt"),
+            "blank", Paths.get(resources.toAbsolutePath().toString(),
+                    "expected",
+                    "blankExpected.txt")
+    );
+
+    private final Differ pTestDiffer = new Differ();
 
     public ParserTest() throws URISyntaxException {
     }
 
     @ParameterizedTest
     @EnumSource(Extensions.class)
-    public void stylishComparisonTest(Extensions extension) throws IOException {
-        List<Path> testFiles = List.of(
-                Paths.get(resources.toAbsolutePath().toString(),
-                        extension.getFirstExtension(),
-                        "right1." + extension.getFirstExtension()),
-                Paths.get(resources.toAbsolutePath().toString(),
-                        extension.getFirstExtension(),
-                        "right2." + extension.getFirstExtension())
-        );
-        pTestDiffer = switch (extension) {
-            case JSON -> new JSONDiffer();
-            case YAML -> new YAMLDiffer();
-        };
+    public void comparisonTest(Extensions extension) throws IOException {
+        List<Path> testFiles = generateFilePaths("right1", "right2", extension);
 
-        String expected =
-                """
-                {
-                    chars1: [a, b, c]
-                  - chars2: [d, e, f]
-                  + chars2: false
-                  - checked: false
-                  + checked: true
-                  - default: null
-                  + default: [value1, value2]
-                  - id: 45
-                  + id: null
-                  - key1: value1
-                  + key2: value2
-                    numbers1: [1, 2, 3, 4]
-                  - numbers2: [2, 3, 4, 5]
-                  + numbers2: [22, 33, 44, 55]
-                  - numbers3: [3, 4, 5]
-                  + numbers4: [4, 5, 6]
-                  + obj1: {nestedKey=value, isNested=true}
-                  - setting1: Some value
-                  + setting1: Another value
-                  - setting2: 200
-                  + setting2: 300
-                  - setting3: true
-                  + setting3: none
-                }""";
+        String expected = readExpectedFromFileByKey("stylish");
         String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "stylish");
         assertThat(actual).isEqualTo(expected);
-    }
 
-    public void plainComparisonTest(Extensions extension) throws IOException {
-        List<Path> testFiles = List.of(
-                Paths.get(resources.toAbsolutePath().toString(),
-                        extension.getFirstExtension(),
-                        "right1." + extension.getFirstExtension()),
-                Paths.get(resources.toAbsolutePath().toString(),
-                        extension.getFirstExtension(),
-                        "right2." + extension.getFirstExtension())
-        );
-        pTestDiffer = switch (extension) {
-            case JSON -> new JSONDiffer();
-            case YAML -> new YAMLDiffer();
-        };
-        String expected =
-                """
-                Property 'chars2' was updated. From [complex value] to false
-                Property 'checked' was updated. From false to true
-                Property 'default' was updated. From null to [complex value]
-                Property 'id' was updated. From 45 to null
-                Property 'key1' was removed
-                Property 'key2' was added with value: 'value2'
-                Property 'numbers2' was updated. From [complex value] to [complex value]
-                Property 'numbers3' was removed
-                Property 'numbers4' was added with value: [complex value]
-                Property 'obj1' was added with value: [complex value]
-                Property 'setting1' was updated. From 'Some value' to 'Another value'
-                Property 'setting2' was updated. From 200 to 300
-                Property 'setting3' was updated. From true to 'none'""";
-        String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "plane");
+        expected = readExpectedFromFileByKey("plane");
+        actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "plane");
         assertThat(actual).isEqualTo(expected);
-    }
 
-    @ParameterizedTest
-    @EnumSource(Extensions.class)
-    public void jsonComparisonTest(Extensions extension) throws IOException {
-        List<Path> testFiles = List.of(
-                Paths.get(resources.toAbsolutePath().toString(),
-                        extension.getFirstExtension(),
-                        "right1." + extension.getFirstExtension()),
-                Paths.get(resources.toAbsolutePath().toString(),
-                        extension.getFirstExtension(),
-                        "right2." + extension.getFirstExtension())
-        );
-        pTestDiffer = switch (extension) {
-            case JSON -> new JSONDiffer();
-            case YAML -> new YAMLDiffer();
-        };
-        String expected = "["
-                + "{\"chars1\":[\"a\",\"b\",\"c\"]},"
-                + "{\"chars2\":[\"d\",\"e\",\"f\"]},"
-                + "{\"chars2\":false},"
-                + "{\"checked\":false},"
-                + "{\"checked\":true},"
-                + "{\"default\":null},"
-                + "{\"default\":[\"value1\",\"value2\"]},"
-                + "{\"id\":45},"
-                + "{\"id\":null},"
-                + "{\"key1\":\"value1\"},"
-                + "{\"key2\":\"value2\"},"
-                + "{\"numbers1\":[1,2,3,4]},"
-                + "{\"numbers2\":[2,3,4,5]},"
-                + "{\"numbers2\":[22,33,44,55]},"
-                + "{\"numbers3\":[3,4,5]},"
-                + "{\"numbers4\":[4,5,6]},"
-                + "{\"obj1\":{\"nestedKey\":\"value\",\"isNested\":true}},"
-                + "{\"setting1\":\"Some value\"},"
-                + "{\"setting1\":\"Another value\"},"
-                + "{\"setting2\":200},"
-                + "{\"setting2\":300},"
-                + "{\"setting3\":true},"
-                + "{\"setting3\":\"none\"}"
-                + "]";
-        String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "json");
+        expected = readExpectedFromFileByKey("json");
+        actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "json");
         assertThat(actual).isEqualTo(expected);
     }
 
     @ParameterizedTest
     @EnumSource(Extensions.class)
     public void emptyComparisonTest(Extensions extension) throws Exception {
-        List<Path> testFiles = List.of(
-                Paths.get(resources.toAbsolutePath().toString(),
-                        extension.getFirstExtension(),
-                        "blank1." + extension.getFirstExtension()),
-                Paths.get(resources.toAbsolutePath().toString(),
-                        extension.getFirstExtension(),
-                        "blank2." + extension.getFirstExtension())
-        );
-        pTestDiffer = switch (extension) {
-            case JSON -> new JSONDiffer();
-            case YAML -> new YAMLDiffer();
-        };
+        List<Path> testFiles = generateFilePaths("blank1", "blank2", extension);
         for (Path testFile : testFiles) {
-            Files.write(testFile, pTestDiffer.getMapper().writeValueAsBytes(Map.of()));
+            Files.write(testFile, new ObjectMapper().writeValueAsBytes(Map.of()));
         }
 
-        String expected =
-                """
-                {
-
-                }""";
+        String expected = readExpectedFromFileByKey("blank");
         String actual = pTestDiffer.generate(testFiles.get(0), testFiles.get(1), "stylish");
         assertThat(actual).isEqualTo(expected);
     }
@@ -183,20 +83,9 @@ public final class ParserTest {
     @ParameterizedTest
     @EnumSource(Extensions.class)
     public void emptyFileTest(Extensions extension) throws Exception {
-        List<Path> testFiles = List.of(
-                Paths.get(resources.toAbsolutePath().toString(),
-                        extension.getFirstExtension(),
-                        "empty1." + extension.getFirstExtension()),
-                Paths.get(resources.toAbsolutePath().toString(),
-                        extension.getFirstExtension(),
-                        "empty2." + extension.getFirstExtension())
-        );
-        pTestDiffer = switch (extension) {
-            case JSON -> new JSONDiffer();
-            case YAML -> new YAMLDiffer();
-        };
+        List<Path> testFiles = generateFilePaths("empty1", "empty2", extension);
         for (Path testFile : testFiles) {
-            Files.write(testFile, pTestDiffer.getMapper().writeValueAsBytes(""));
+            Files.write(testFile, new ObjectMapper().writeValueAsBytes(""));
         }
 
         Class<InvalidFormatException> expected = InvalidFormatException.class;
@@ -204,22 +93,32 @@ public final class ParserTest {
                 .isInstanceOf(expected);
     }
 
-    /*@ParameterizedTest
-    @ValueSource(strings = {".json", ".yml"})
-    public void wrongExtensionTest(String extension) {
-
-    }*/
     @ParameterizedTest
     @EnumSource(Extensions.class)
-    public void wrongFilePathTest(Extensions extension) throws IOException {
+    public void wrongFilePathTest(Extensions extension) {
         Path wrongFilePath = Paths.get("missing." + extension.getFirstExtension());
-        pTestDiffer = switch (extension) {
-            case JSON -> new JSONDiffer();
-            case YAML -> new YAMLDiffer();
-        };
 
         Class<IOException> expected = IOException.class;
         assertThatThrownBy(() -> pTestDiffer.generate(wrongFilePath, wrongFilePath, "stylish"))
                 .isInstanceOf(expected);
+    }
+
+    private List<Path> generateFilePaths(String name1, String name2, Extensions extension) {
+        return List.of(
+                Paths.get(resources.toAbsolutePath().toString(),
+                        extension.getFirstExtension(),
+                        name1 + "." + extension.getFirstExtension()),
+                Paths.get(resources.toAbsolutePath().toString(),
+                        extension.getFirstExtension(),
+                        name2 + "." + extension.getFirstExtension())
+        );
+    }
+
+    private String readExpectedFromFileByKey(String key) throws IOException {
+        InputStream inputStream = Files.newInputStream(expectedFiles.get(key), StandardOpenOption.READ);
+        return new BufferedReader(
+                new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                .lines()
+                .collect(Collectors.joining("\n"));
     }
 }

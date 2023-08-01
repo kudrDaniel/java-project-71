@@ -2,8 +2,6 @@ package hexlet.code;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
-import hexlet.code.differs.JSONDiffer;
-import hexlet.code.differs.YAMLDiffer;
 import hexlet.code.utils.ExitCodes;
 import hexlet.code.utils.Extensions;
 import picocli.CommandLine;
@@ -34,12 +32,8 @@ public final class App implements Callable<Integer> {
     public Integer call() throws Exception {
         Path fullFilePath1 = Paths.get(filepath1);
         Path fullFilePath2 = Paths.get(filepath2);
-        Extensions ext = Extensions.byFileExtension(Utils.getFileExtension(fullFilePath1));
 
-        Differ differ = switch (ext) {
-            case JSON -> new JSONDiffer();
-            case YAML -> new YAMLDiffer();
-        };
+        Differ differ = new Differ();
         String difference;
         difference = differ.generate(fullFilePath1, fullFilePath2, format);
 

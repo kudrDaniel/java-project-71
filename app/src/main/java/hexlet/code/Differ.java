@@ -1,51 +1,56 @@
 package hexlet.code;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.utils.Extensions;
-
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
-public abstract class Differ {
-    private final ObjectMapper pMapper;
-    private final Extensions pExtensions;
+public final class Differ {
 
-    protected Differ(ObjectMapper mapper, Extensions extensions) {
-        pMapper = mapper;
-        pExtensions = extensions;
+    public Differ() {
     }
 
-    public final String generate(Path filePath1, Path filePath2, String formatName) throws IOException {
-        this.checkFilesExtension(filePath1, filePath2);
-        LinkedHashMap<String, Object> parsedDiff = Parser.parse(
-                filePath1,
-                filePath2,
-                this.getMapper());
-        return Formatter.getFormatterByName(formatName).format(parsedDiff);
-    }
+    public String generate(
+            Path filePath1,
+            Path filePath2,
+            String formatName)
+            throws IOException {
 
-    protected final void checkFilesExtension(Path filePath1, Path filePath2) throws IOException {
-        String fileExt1 = Utils.getFileExtension(filePath1.getFileName());
-        String fileExt2 = Utils.getFileExtension(filePath2.getFileName());
-        if (fileExt1.isEmpty() || fileExt2.isEmpty()) {
-            throw new IOException("One or both files has empty extension:\n"
-                    + "\t" + filePath1.getFileName() + "\n"
-                    + "\t" + filePath2.getFileName() + "\n"
-            );
-        } else if (Arrays.stream(pExtensions.getExtensionArray())
-                .noneMatch(ext -> ext.equalsIgnoreCase(fileExt1)
-                        && ext.equalsIgnoreCase(fileExt2))) {
-            throw new IOException("One or both files has wrong extension\n"
-                    + "or both files has different extension\n"
-                    + "\t" + filePath1.getFileName() + "\n"
-                    + "\t" + filePath2.getFileName() + "\n"
-            );
+        List<Map<String, Object>> mapList = Parser.parse(filePath1, filePath2);
+
+        Map<String, Object> map1 = mapList.get(0);
+        Map<String, Object> map2 = mapList.get(1);
+        Set<String> keys = new TreeSet<>();
+        keys.addAll(map1.keySet());
+        keys.addAll(map2.keySet());
+
+        Map<String, Object> differMap = new LinkedHashMap<>();
+
+        for (var key : keys) {
+            String newKey;
+            if (!map1.containsKey(key)) {
+                //added
+                newKey = key + " added";
+                differMap.put(newKey, map2.get(key));
+            } else if (!map2.containsKey(key)) {
+                //removed
+                newKey = key + " removed";
+                differMap.put(newKey, map1.get(key));
+            } else if (Utils.equalsNullable(map1.get(key), (map2.get(key)))) {
+                //unchanged
+                newKey = key + " unchanged";
+                differMap.put(newKey, map1.get(key));
+            } else {
+                //changed
+                newKey = key + " changedFrom";
+                differMap.put(newKey, map1.get(key));
+                newKey = key + " changedTo";
+                differMap.put(newKey, map2.get(key));
+            }
         }
-    }
-
-    public final ObjectMapper getMapper() {
-        return pMapper;
+        return Formatter.getFormatterByName(formatName).format(differMap);
     }
 }
