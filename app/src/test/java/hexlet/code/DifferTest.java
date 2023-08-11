@@ -23,10 +23,12 @@ public final class DifferTest {
         String expected2 = readExpectedFromFile(getFixturePath("expected_plain.txt"));
         String expected3 = readExpectedFromFile(getFixturePath("expected_json.txt"));
 
+        String actual0 = Differ.generate(filePath1.toString(), filePath2.toString());
         String actual1 = Differ.generate(filePath1.toString(), filePath2.toString(), "stylish");
         String actual2 = Differ.generate(filePath1.toString(), filePath2.toString(), "plain");
         String actual3 = Differ.generate(filePath1.toString(), filePath2.toString(), "json");
 
+        assertThat(actual0).isEqualTo(expected1);
         assertThat(actual1).isEqualTo(expected1);
         assertThat(actual2).isEqualTo(expected2);
         assertThat(actual3).isEqualTo(expected3);
