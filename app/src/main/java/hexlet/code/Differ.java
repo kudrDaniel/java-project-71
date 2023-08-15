@@ -1,12 +1,11 @@
 package hexlet.code;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import hexlet.code.utils.Extensions;
+import hexlet.code.utils.DataTypes;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,14 +15,17 @@ public final class Differ {
             String filePath2,
             String format)
             throws IOException {
-        Path path1 = Paths.get(filePath1);
-        Path path2 = Paths.get(filePath2);
+        Path path0 = Paths.get(filePath1).toAbsolutePath();
+        Path path1 = Paths.get(filePath2).toAbsolutePath();
 
-        ObjectMapper actMapper = getActualMapper(path1, path2);
+        DataTypes actualDataType = getActualDataType(path0, path1);
 
-        List<String> fileStringList = Reader.readFiles(path1, path2);
+        String fileString0 = Reader.readFile(path0);
+        String fileString1 = Reader.readFile(path1);
 
-        List<Map<String, Object>> mapList = Parser.parse(fileStringList, actMapper);
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        mapList.add(Parser.parse(fileString0, actualDataType));
+        mapList.add(Parser.parse(fileString1, actualDataType));
 
         Map<String, Object> rawDiffMap = DiffBuilder.getDifference(mapList);
 
@@ -40,19 +42,16 @@ public final class Differ {
         return generate(filePath1, filePath2, "stylish");
     }
 
-    private static ObjectMapper getActualMapper(Path path1, Path path2) throws IOException {
-        Extensions[] filesExt = {
-                Extensions.byFileExtension(Utils.getFileExtension(path1)),
-                Extensions.byFileExtension(Utils.getFileExtension(path2))
+    private static DataTypes getActualDataType(Path path1, Path path2) throws IOException {
+        DataTypes[] filesExt = {
+                DataTypes.byFileExtension(Utils.getFileExtension(path1)),
+                DataTypes.byFileExtension(Utils.getFileExtension(path2))
         };
 
         if (filesExt[0] != filesExt[1]) {
             throw new IOException("wrong extension");
         }
 
-        return switch (Extensions.byFileExtension(Utils.getFileExtension(path1))) {
-            case JSON -> new ObjectMapper();
-            case YAML -> new YAMLMapper();
-        };
+        return DataTypes.byFileExtension(Utils.getFileExtension(path1));
     }
 }

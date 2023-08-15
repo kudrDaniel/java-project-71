@@ -37,9 +37,7 @@ public final class App implements Callable<Integer> {
 
     public static void main(String[] args) {
         CommandLine.IExecutionExceptionHandler exceptionHandler = (ex, commandLine, parseResult) -> {
-            //ex.printStackTrace(); // no stack trace
             commandLine.getErr().println(ex.getMessage());
-            //commandLine.usage(commandLine.getErr());
             return commandLine.getExitCodeExceptionMapper().getExitCode(ex);
         };
         CommandLine.IExitCodeExceptionMapper exceptionMapper = exception -> {
