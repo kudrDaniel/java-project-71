@@ -19,8 +19,9 @@ public final class Parser {
             case YAML -> new YAMLMapper();
         };
 
-        return mapper.readValue(fileString,
-                new TypeReference<HashMap<String, Object>>() {
-                });
+        return mapper.readValue(
+                fileString,
+                new TypeReference<HashMap<String, Object>>() {}
+        );
     }
 }

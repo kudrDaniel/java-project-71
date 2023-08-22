@@ -7,40 +7,40 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public final class DiffBuilder {
-    public static Map<String, Object> getDifference(List<Map<String, Object>> mapList) {
-        Map<String, Object> rawDiffMap = new LinkedHashMap<>();
+    public static Map<String, Object> getDifference(List<Map<String, Object>> filesData) {
+        Map<String, Object> rawDiff = new LinkedHashMap<>();
 
-        Map<String, Object> map1 = mapList.get(0);
-        Map<String, Object> map2 = mapList.get(1);
+        Map<String, Object> data0 = filesData.get(0);
+        Map<String, Object> data1 = filesData.get(1);
 
         Set<String> keys = new TreeSet<>();
 
-        keys.addAll(map1.keySet());
-        keys.addAll(map2.keySet());
+        keys.addAll(data0.keySet());
+        keys.addAll(data1.keySet());
 
         for (var key : keys) {
             String newKey;
-            if (!map1.containsKey(key)) {
+            if (!data0.containsKey(key)) {
                 //added
                 newKey = key + " added";
-                rawDiffMap.put(newKey, map2.get(key));
-            } else if (!map2.containsKey(key)) {
+                rawDiff.put(newKey, data1.get(key));
+            } else if (!data1.containsKey(key)) {
                 //removed
                 newKey = key + " removed";
-                rawDiffMap.put(newKey, map1.get(key));
-            } else if (Utils.equalsNullable(map1.get(key), (map2.get(key)))) {
+                rawDiff.put(newKey, data0.get(key));
+            } else if (Utils.equalsNullable(data0.get(key), (data1.get(key)))) {
                 //unchanged
                 newKey = key + " unchanged";
-                rawDiffMap.put(newKey, map1.get(key));
+                rawDiff.put(newKey, data0.get(key));
             } else {
                 //changed
                 newKey = key + " changedFrom";
-                rawDiffMap.put(newKey, map1.get(key));
+                rawDiff.put(newKey, data0.get(key));
                 newKey = key + " changedTo";
-                rawDiffMap.put(newKey, map2.get(key));
+                rawDiff.put(newKey, data1.get(key));
             }
         }
 
-        return rawDiffMap;
+        return rawDiff;
     }
 }
