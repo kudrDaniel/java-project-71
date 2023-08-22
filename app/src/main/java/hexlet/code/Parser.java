@@ -21,7 +21,7 @@ public final class Parser {
 
         return mapper.readValue(
                 fileString,
-                new TypeReference<HashMap<String, Object>>() {}
+                new TypeReference<HashMap<String, Object>>() { }
         );
     }
 }
