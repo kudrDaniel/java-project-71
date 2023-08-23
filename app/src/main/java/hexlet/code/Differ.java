@@ -1,6 +1,6 @@
 package hexlet.code;
 
-import hexlet.code.utils.DataTypes;
+import hexlet.code.utils.DataType;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -18,7 +18,7 @@ public final class Differ {
         Path path0 = Paths.get(filePath1).toAbsolutePath();
         Path path1 = Paths.get(filePath2).toAbsolutePath();
 
-        DataTypes actualDataType = getActualDataType(path0, path1);
+        DataType actualDataType = getActualDataType(path0, path1);
 
         String fileString0 = Reader.readFile(path0);
         String fileString1 = Reader.readFile(path1);
@@ -42,16 +42,20 @@ public final class Differ {
         return generate(filePath1, filePath2, "stylish");
     }
 
-    private static DataTypes getActualDataType(Path path1, Path path2) throws IOException {
-        DataTypes[] filesExt = {
-                DataTypes.byFileExtension(Utils.getFileExtension(path1)),
-                DataTypes.byFileExtension(Utils.getFileExtension(path2))
+    private static DataType getActualDataType(Path path1, Path path2) throws IOException {
+        DataType[] filesExt = {
+                DataType.getDataTypeByFileExtension(Utils.getFileExtension(path1)),
+                DataType.getDataTypeByFileExtension(Utils.getFileExtension(path2))
         };
+
+        if (filesExt[0] == null || filesExt[1] == null) {
+            throw new NullPointerException();
+        }
 
         if (filesExt[0] != filesExt[1]) {
             throw new IOException("wrong extension");
         }
 
-        return DataTypes.byFileExtension(Utils.getFileExtension(path1));
+        return filesExt[0];
     }
 }

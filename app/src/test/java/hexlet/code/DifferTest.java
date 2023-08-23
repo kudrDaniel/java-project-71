@@ -1,6 +1,6 @@
 package hexlet.code;
 
-import hexlet.code.utils.DataTypes;
+import hexlet.code.utils.DataType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -15,10 +15,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public final class DifferTest {
 
     @ParameterizedTest
-    @EnumSource(DataTypes.class)
-    public void comparisonTest(DataTypes extension) throws IOException {
-        Path filePath1 = getFixturePath("right1." + extension.getFirstExtensionByDataType());
-        Path filePath2 = getFixturePath("right2." + extension.getFirstExtensionByDataType());
+    @EnumSource(DataType.class)
+    public void comparisonTest(DataType extension) throws IOException {
+        Path filePath1 = getFixturePath("right1." + extension.getDataType());
+        Path filePath2 = getFixturePath("right2." + extension.getDataType());
         String expected1 = readExpectedFromFile(getFixturePath("expected_stylish.txt"));
         String expected2 = readExpectedFromFile(getFixturePath("expected_plain.txt"));
         String expected3 = readExpectedFromFile(getFixturePath("expected_json.txt"));
@@ -35,9 +35,9 @@ public final class DifferTest {
     }
 
     @ParameterizedTest
-    @EnumSource(DataTypes.class)
-    public void wrongFilePathTest(DataTypes extension) {
-        String wrongFilePath = Paths.get("missing." + extension.getFirstExtensionByDataType()).toString();
+    @EnumSource(DataType.class)
+    public void wrongFilePathTest(DataType extension) {
+        String wrongFilePath = Paths.get("missing." + extension.getDataType()).toString();
 
         Class<IOException> expected = IOException.class;
         assertThatThrownBy(() -> Differ.generate(wrongFilePath, wrongFilePath))
