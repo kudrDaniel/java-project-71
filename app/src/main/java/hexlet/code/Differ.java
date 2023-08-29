@@ -5,7 +5,8 @@ import hexlet.code.utils.DataType;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,15 +24,17 @@ public final class Differ {
         String fileString0 = Reader.readFile(path0);
         String fileString1 = Reader.readFile(path1);
 
-        List<Map<String, Object>> mapList = new ArrayList<>();
-        mapList.add(Parser.parse(fileString0, actualDataType));
-        mapList.add(Parser.parse(fileString1, actualDataType));
+        Map<String, Object> data0 = Parser.parse(fileString0, actualDataType);
+        Map<String, Object> data1 = Parser.parse(fileString1, actualDataType);
 
-        Map<String, Object> rawDiffMap = DiffBuilder.getDifference(mapList);
+        List<SimpleEntry<
+                SimpleEntry<String, Object>,
+                SimpleEntry<String, Object>
+                >> diffList = DiffBuilder.getDifference(data0, data1);
 
         Formatter formatter = Formatter.getFormatterByName(format);
 
-        return formatter.format(rawDiffMap);
+        return formatter.format(diffList);
 
     }
 
@@ -42,20 +45,28 @@ public final class Differ {
         return generate(filePath1, filePath2, "stylish");
     }
 
-    private static DataType getActualDataType(Path path1, Path path2) throws IOException {
-        DataType[] filesExt = {
-                DataType.getDataTypeByFileExtension(Utils.getFileExtension(path1)),
-                DataType.getDataTypeByFileExtension(Utils.getFileExtension(path2))
-        };
-
-        if (filesExt[0] == null || filesExt[1] == null) {
-            throw new NullPointerException();
+    private static DataType getActualDataType(Path... paths) throws IOException {
+        if (paths.length == 0) {
+            throw new RuntimeException("No files to match");
         }
-
-        if (filesExt[0] != filesExt[1]) {
-            throw new IOException("wrong extension");
+        DataType expected = DataType.getDataTypeByFileExtension(Utils.getFileExtension(paths[0]));
+        boolean isAllExtSame = Arrays.stream(paths)
+                .map(path -> {
+                    try {
+                        DataType current = DataType.getDataTypeByFileExtension(Utils.getFileExtension(path));
+                        if (current == null) {
+                            throw new NullPointerException();
+                        }
+                        return current;
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .filter(ext -> ext.equals(expected))
+                .toList().size() == paths.length;
+        if (isAllExtSame) {
+            return expected;
         }
-
-        return filesExt[0];
+        throw new RuntimeException("Files must have same extensions");
     }
 }

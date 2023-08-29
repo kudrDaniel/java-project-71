@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import hexlet.code.utils.DataType;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class Parser {
@@ -21,7 +21,7 @@ public final class Parser {
 
         return mapper.readValue(
                 fileString,
-                new TypeReference<HashMap<String, Object>>() { }
+                new TypeReference<LinkedHashMap<String, Object>>() { }
         );
     }
 }

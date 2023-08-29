@@ -7,3 +7,7 @@
 /**/logs/
 
 *.class
+
+app/*.json
+
+app/*.yml
